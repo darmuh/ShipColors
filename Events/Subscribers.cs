@@ -18,11 +18,11 @@ namespace ShipColors.Events
 
         public static void OnGameLoad()
         {
-            if(StartGame.SoftCompatibility("ShipColors", "terminalstuff", ref Plugin.instance.darmuhsTerminalStuff))
+            if(StartGame.SoftCompatibility("darmuh.TerminalStuff", ref Plugin.instance.darmuhsTerminalStuff))
             {
                 Plugin.MoreLogs("leaving terminal customization to darmuhsTerminalStuff");
             }
-            if(StartGame.SoftCompatibility("ShipColors", "bmx", ref Plugin.instance.LobbyCompat))
+            if(StartGame.SoftCompatibility("BMX.LobbyCompatibility", ref Plugin.instance.LobbyCompat))
             {
                 Compat.BMX_LobbyCompat.SetCompat(false);
             }
