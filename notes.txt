@@ -1,0 +1,30 @@
+﻿[Debug  :ShipColors] Mat_ScreenOff set
+[Debug  :ShipColors] Mat_TerminalTex set
+[Debug  :ShipColors] This should be 7 - 7
+[Debug  :ShipColors] Previous Color noted as [5C5840] for configItem - Mat_Charger
+[Debug  :ShipColors] Previous Color noted as [494949] for configItem - Mat_DarkSteel
+[Debug  :ShipColors] Previous Color noted as [FFFFFF] for configItem - Mat_ElevatorSteel
+[Debug  :ShipColors] Previous Color noted as [2E2E2E] for configItem - Mat_BlackRubber
+[Debug  :ShipColors] Charger, Darksteel, ElevatorSteel, and BlackRubber materials set.
+[Debug  :ShipColors] Previous Color noted as [545250] for configItem - Mat_DeskBottom
+[Debug  :ShipColors] Mat_DeskBottom has been set
+[Debug  :ShipColors] Previous Color noted as [6C6862] for configItem - Mat_ControlPanel
+[Debug  :ShipColors] Mat_ControlPanel has been set
+[Debug  :ShipColors] This should be 5 - 5
+[Debug  :ShipColors] Previous Color noted as [FFFFFF] for configItem - Mat_ShipHull
+[Debug  :ShipColors] Previous Color noted as [D6C9B5] for configItem - Mat_ShipRoomMetal
+[Debug  :ShipColors] Previous Color noted as [C8BDB8] for configItem - Mat_ShipFloor
+[Debug  :ShipColors] Previous Color noted as [CFCFCF] for configItem - Mat_BunkBeds
+[Debug  :ShipColors] Mat_BunkBeds has been set
+[Debug  :ShipColors] Previous Color noted as [6D2021] for configItem - Mat_LockerCabinet
+[Debug  :ShipColors] Mat_LockerCabinet has been set
+[Debug  :ShipColors] Previous Color noted as [7D2426] for configItem - Mat_LockerCabinet
+[Debug  :ShipColors] Mat_LockerCabinet has been set
+[Debug  :ShipColors] Previous Color noted as [FFECD0] for configItem - Mat_DoorGenerator
+[Debug  :ShipColors] Mat_DoorGenerator has been set
+[Debug  :ShipColors] Previous Color noted as [373732] for configItem - Mat_DoorControlPanel
+[Debug  :ShipColors] Mat_DoorControlPanel has been set
+[Debug  :ShipColors] This should be 2 - 2
+[Debug  :ShipColors] Previous Color noted as [71665E] for configItem - Mat_ShipDoors
+[Debug  :ShipColors] Previous Color noted as [6F645D] for configItem - Mat_ShipDoors2
+[Debug  :ShipColors] Only setting shared texture values
