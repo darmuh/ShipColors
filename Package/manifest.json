@@ -1,9 +1,9 @@
 {
   "name": "ShipColors",
-  "version_number": "0.1.0",
+  "version_number": "0.2.0",
   "website_url": "https://github.com/darmuh/ShipColors",
-  "description": "Style your ship with your own personal colors! ",
+  "description": "Style your ship with your own personal colors!",
   "dependencies": [
-    "darmuh-OpenLib-0.1.6"
+    "darmuh-OpenLib-0.2.0"
   ]
 }
