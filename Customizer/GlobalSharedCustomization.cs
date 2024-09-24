@@ -3,6 +3,8 @@ using ShipColors.ConfigManager;
 using static OpenLib.Common.Misc;
 
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ShipColors.Customizer
 {
@@ -124,20 +126,29 @@ namespace ShipColors.Customizer
                 return true;
         }
 
-        //Charger                           Speaker                         Vent      
-        //0 = chargestation                 
-        //1 = darksteel
-        //2 = elevatorshaftsteel *            0 = elevatorshaftsteel          0 = elevatorshaftsteel
-        //3 = blackrubber   *                1 = speaker face                1 = blackrubber
-        //4 = warningsticker                                                2 = powerboxgrating
-        //5 = camera
-        //6 = redbuttonled
+        private static void GetAllMatchingMeshRenderers(Material query)
+        {
+            List<MeshRenderer> allMeshRenderers = [.. Resources.FindObjectsOfTypeAll<MeshRenderer>()];
+            Plugin.Spam($"got all meshrenderers - {allMeshRenderers.Count}");
 
-
-        //Controldesk
-        //hangardeskbottom
-
-        //control panel
-        //controlpanel
+            for (int i = 0; i < allMeshRenderers.Count; i++)
+            {
+                if (allMeshRenderers[i] == null)
+                {
+                    Plugin.Spam("meshRenderer is NULL");
+                    continue;
+                }
+                else if (allMeshRenderers[i].materials == null)
+                {
+                    Plugin.Spam("meshRenderer is NULL");
+                    continue;
+                }
+                else if (allMeshRenderers[i].materials.Contains(query))
+                {
+                    Plugin.Spam($"material query found at {allMeshRenderers[i].gameObject.name}");
+                    Plugin.Spam($"path: {allMeshRenderers[i].gameObject.scene.path}");
+                }
+            }
+        }
     }
 }

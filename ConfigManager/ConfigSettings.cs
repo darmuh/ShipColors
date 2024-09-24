@@ -9,14 +9,20 @@ namespace ShipColors.ConfigManager
         public static ConfigEntry<bool> ExtensiveLogging { get; internal set; }
         public static ConfigEntry<bool> DeveloperLogging { get; internal set; }
 
+        //Mode
+        public static ConfigEntry<string> ModeSetting { get; internal set; }
+        public static ConfigEntry<string> ConfigCode;
+
         //LIGHTS
         public static ConfigEntry<bool> SetShipLights { get; internal set; }
         public static ConfigEntry<string> ShipLight_1 { get; internal set; }
         public static ConfigEntry<string> ShipLight_2 { get; internal set; }
         public static ConfigEntry<string> ShipLight_3 { get; internal set; }
+        public static ConfigEntry<string> ShipLight_4 { get; internal set; }
+        public static ConfigEntry<string> ShipLight_5 { get; internal set; }
+        public static ConfigEntry<string> ShipLight_6 { get; internal set; }
 
         //Use Shared Materials
-        public static ConfigEntry<bool> UseSharedMaterials { get; internal set; }
         public static ConfigEntry<string> Mat_TerminalTex { get; internal set; }
         public static ConfigEntry<string> Mat_ScreenOff { get; internal set; }
         public static ConfigEntry<string> Mat_Charger {  get; internal set; }
@@ -61,14 +67,19 @@ namespace ShipColors.ConfigManager
             ExtensiveLogging = MakeBool(Plugin.instance.Config, "Debug", "ExtensiveLogging", false, "Enable or Disable extensive logging for this mod.");
             DeveloperLogging = MakeBool(Plugin.instance.Config, "Debug", "DeveloperLogging", false, "Enable or Disable developer logging for this mod. (this will fill your log file FAST)");
 
+            ModeSetting = MakeClampedString(Plugin.instance.Config, "Setup", "ModeSetting", "Generate Config", "Determine whether to generate a config for each material or to use Global Shared Textures", new AcceptableValueList<string>("Use Shared Textures", "Generate Config"));
+            ConfigCode = MakeString(Plugin.instance.Config, "Setup", "ConfigCode", "", "Paste your config code from the configuration website here to automatically apply your changes!");
+
             //LIGHTS
             SetShipLights = MakeBool(Plugin.instance.Config, "Ship Lights", "SetShipLights", true, "Enable or Disable changing ship light colors section");
             ShipLight_1 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_1", "#FFFFFF", "This changes the color of the first ship light");
             ShipLight_2 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_2", "#FFFFFF", "This changes the color of the first ship light");
             ShipLight_3 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_3", "#FFFFFF", "This changes the color of the first ship light");
+            ShipLight_4 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_4", "#FFFFFF", "This changes the color of the first ship light");
+            ShipLight_5 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_5", "#FFFFFF", "This changes the color of the first ship light");
+            ShipLight_6 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_6", "#FFFFFF", "This changes the color of the first ship light");
 
             //Global Shared Textures
-            UseSharedMaterials = MakeBool(Plugin.instance.Config, "Global Shared Textures", "UseSharedMaterials", true, "Enable or Disable modifying global shared textures section");
             Mat_TerminalTex = MakeString(Plugin.instance.Config, "Global Shared Textures", "Mat_TerminalTex", "#CFCFCF", "This changes the color of the physical terminal texture (re-used by other electronics)");
             Mat_Charger = MakeString(Plugin.instance.Config, "Global Shared Textures", "Mat_Charger", "#5C5840", "This changes the color of the main texture of the charging station");
             Mat_DarkSteel = MakeString(Plugin.instance.Config, "Global Shared Textures", "Mat_DarkSteel", "#494949", "This changes the color of the DarkSteel material that is used throughout the game");
@@ -86,26 +97,7 @@ namespace ShipColors.ConfigManager
             Mat_ShipDoors2 = MakeString(Plugin.instance.Config, "Global Shared Textures", "Mat_ShipDoors2", "#6F645D", "This changes the color of the ShipDoors2 shared material that is used throughout the game");
             Mat_DoorGenerator = MakeString(Plugin.instance.Config, "Global Shared Textures", "Mat_DoorGenerator", "#FFECD0", "This changes the color of the DoorGenerator shared material that is used throughout the game");
             Mat_DoorControlPanel = MakeString(Plugin.instance.Config, "Global Shared Textures", "Mat_DoorControlPanel", "#373732", "This changes the color of the DoorControlPanel shared material that is used throughout the game");
-
-
-            //Terminal Customization
-            /*
-            TerminalCustomization = MakeBool(Plugin.instance.Config, "Terminal Customization", "TerminalCustomization", false, "Enable or Disable terminal color customizations");
-            TerminalColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalColor", "#666633", "This changes the color of the physical terminal");
-            TerminalButtonsColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalButtonsColor", "#9900ff", "This changes the color of the physical buttons on the terminal");
-            TerminalKeyboardColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalKeyboardColor", "#9900ff", "This changes the color of the keyboard on the terminal");
-            TerminalTextColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalTextColor", "#ffffb3", "This changes the color of the main text in the terminal");
-            TerminalMoneyColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalMoneyColor", "#ccffcc", "This changes the color of the current credits text in the top left of the terminal");
-            TerminalMoneyBGColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalMoneyBGColor", "#ccffcc", "This changes the color of the current credits text in the top left of the terminal");
-            TerminalMoneyBGAlpha = MakeClampedFloat(Plugin.instance.Config, "Terminal Customization", "TerminalMoneyBGAlpha", 0.1f, "This changes the transparency of the money background color.", 0f, 1f);
-            TerminalCaretColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalCaretColor", "#9900ff", "This changes the color of the text caret in the terminal");
-            TerminalScrollbarColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalScrollbarColor", "#9900ff", "This changes the color of the scrollbar in the terminal");
-            TerminalScrollBGColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalScrollBGColor", "#ffffb3", "This changes the color of the background box of the scrollbar in the terminal");
-            TerminalLightColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalLightColor", "#9900ff", "This changes the color of the light that shines from the terminal");
-            TerminalCustomBG = MakeBool(Plugin.instance.Config, "Terminal Customization", "TerminalCustomBG", false, "Enable or Disable custom background for the terminal screen");
-            TerminalCustomBGColor = MakeString(Plugin.instance.Config, "Terminal Customization", "TerminalCustomBGColor", "#9900ff", "This changes the color of the custom background for the terminal screen");
-            TerminalCustomBGAlpha = MakeClampedFloat(Plugin.instance.Config, "Terminal Customization", "TerminalCustomBGAlpha", 0.08f, "This changes the transparency of the custom background for the terminal screen", 0f, 1f); */
-
+                
             RemoveOrphanedEntries(Plugin.instance.Config);
         }
     }

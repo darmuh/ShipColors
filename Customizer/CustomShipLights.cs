@@ -11,12 +11,14 @@ namespace ShipColors.Customizer
 
         internal static void SetShipLights()
         {
-            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (3)", ConfigSettings.ShipLight_1); //and 9
-            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (9)", ConfigSettings.ShipLight_1);
-            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (4)", ConfigSettings.ShipLight_2); //and 8
-            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (8)", ConfigSettings.ShipLight_2);
-            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (5)", ConfigSettings.ShipLight_3); //and 7
-            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (7)", ConfigSettings.ShipLight_3);
+            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (3)", ConfigSettings.ShipLight_1);
+            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (9)", ConfigSettings.ShipLight_4);
+            
+            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (4)", ConfigSettings.ShipLight_2); 
+            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (8)", ConfigSettings.ShipLight_5);
+
+            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (5)", ConfigSettings.ShipLight_3);
+            SetLightColor("Environment/HangarShip/ShipElectricLights/Area Light (7)", ConfigSettings.ShipLight_6);
         }
 
         internal static void SetLightColor(string GameObjectFind, ConfigEntry<string> setting)

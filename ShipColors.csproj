@@ -64,8 +64,8 @@
       <HintPath>Z:\games\modding\LC\darmuhsTerminalStuff\darmuhsTerminalStuff\DarmuhsTerminalCommands\bin\Debug\BepInEx.AssemblyPublicizer.MSBuild.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BMX.LobbyCompatibility">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\LobbyCompatibility\BMX.LobbyCompatibility.dll</HintPath>
+    <Reference Include="darmuhsTerminalStuff">
+      <HintPath>Z:\games\modding\LC\darmuhsTerminalStuff\darmuhsTerminalStuff\DarmuhsTerminalCommands\_Package\darmuhsTerminalStuff.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Facepunch.Steamworks.Win64, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -73,8 +73,11 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="LethalConfig">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\dontloadpls\AinaVT-LethalConfig\LethalConfig\LethalConfig.dll</HintPath>
+    </Reference>
     <Reference Include="OpenLib">
-      <HintPath>Z:\games\modding\LC\publicDevLibrary\OpenLib\bin\Debug\OpenLib.dll</HintPath>
+      <HintPath>Z:\games\modding\LC\publicDevLibrary\OpenLib\_Release Files\OpenLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -148,7 +151,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compat\BMX_LobbyCompat.cs" />
+    <Compile Include="Compat\LethalConfigStuff.cs" />
+    <Compile Include="Compat\MyTerminalStuff.cs" />
+    <Compile Include="ConfigManager\GeneratedConfig.cs" />
+    <Compile Include="Customizer\GeneratedCustomization.cs" />
     <Compile Include="Customizer\GlobalSharedCustomization.cs" />
     <Compile Include="Customizer\CustomShipLights.cs" />
     <Compile Include="Customizer\ShipMonitors.cs" />

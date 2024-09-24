@@ -3,8 +3,10 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using ShipColors.ConfigManager;
+using ShipColors.Customizer;
 using ShipColors.Events;
 using Steamworks.Data;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -12,7 +14,7 @@ using UnityEngine;
 namespace ShipColors
 {
     [BepInPlugin("darmuh.ShipColors", "ShipColors", (PluginInfo.PLUGIN_VERSION))]
-    [BepInDependency("darmuh.OpenLib", "0.1.6")]
+    [BepInDependency("darmuh.OpenLib", "0.2.0")]
 
 
     public class Plugin : BaseUnityPlugin
@@ -22,7 +24,7 @@ namespace ShipColors
         {
             public const string PLUGIN_GUID = "darmuh.ShipColors";
             public const string PLUGIN_NAME = "ShipColors";
-            public const string PLUGIN_VERSION = "0.1.0";
+            public const string PLUGIN_VERSION = "0.2.0";
         }
 
         internal static ManualLogSource Log;
@@ -51,7 +53,15 @@ namespace ShipColors
             if (settingChangedArg.ChangedSetting == null)
                 return;
 
-            if (StartOfRound.Instance != null)
+            if (settingChangedArg.ChangedSetting == ConfigSettings.ConfigCode)
+            {
+                Log.LogDebug("Config Code detected!");
+                GeneratedConfig.ReadConfigCode();
+                return;
+            }
+                
+
+            if (StartOfRound.Instance != null && ConfigSettings.ModeSetting.Value == "Use Shared Textures")
                 Subscribers.StartCustomizer(); //refresh customizations
 
         }
