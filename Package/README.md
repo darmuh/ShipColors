@@ -9,13 +9,15 @@
 	- Regenerate your config at any time
 	- Generate a web page from your config at any time
 	- Generated config items are added to the LethalConfig menu immediately
-- [NEW IN 0.2.0] Compatibility with darmuhsTerminalStuff will not generate Terminal customization config items when TerminalStuff customization is active.
+- [NEW IN 0.2.1] Compatibility with darmuhsTerminalStuff will not generate Terminal customization config items when TerminalStuff customization is active.
 - Any time you change a setting the customizations will **instantly** reload. 
 
 **WARNING:** With the "Use Shared Textures" mode, this mod can change colors of materials not just on the ship. 
  - If you see odd colors on scrap or in the facility it's likely using the same shared texture.
 
-
+### Compatibility
+- This mod has built-in compatibility for [ShipWindows](https://thunderstore.io/c/lethal-company/p/TestAccount666/ShipWindows/), [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/), and [darmuhsTerminalStuff](https://thunderstore.io/c/lethal-company/p/darmuh/darmuhsTerminalStuff/)
+- For all other mods, if you encounter issues please consider adding game objects associated with their mod to the GenBannedObjects list.
 
 <details>
 <summary>Please see below for a helpful guide on configuring this mod in "Use Shared Textures" mode: (Credits to Endoxicom)</summary>

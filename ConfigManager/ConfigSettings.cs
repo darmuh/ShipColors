@@ -12,6 +12,9 @@ namespace ShipColors.ConfigManager
         //Mode
         public static ConfigEntry<string> ModeSetting { get; internal set; }
         public static ConfigEntry<string> ConfigCode;
+        public static ConfigEntry<string> GenAcceptedLayers { get; internal set; }
+        public static ConfigEntry<string> GenBannedObjects { get; internal set; }
+        public static ConfigEntry<string> GenBannedMaterials { get; internal set; }
 
         //LIGHTS
         public static ConfigEntry<bool> SetShipLights { get; internal set; }
@@ -69,6 +72,9 @@ namespace ShipColors.ConfigManager
 
             ModeSetting = MakeClampedString(Plugin.instance.Config, "Setup", "ModeSetting", "Generate Config", "Determine whether to generate a config for each material or to use Global Shared Textures", new AcceptableValueList<string>("Use Shared Textures", "Generate Config"));
             ConfigCode = MakeString(Plugin.instance.Config, "Setup", "ConfigCode", "", "Paste your config code from the configuration website here to automatically apply your changes!");
+            GenAcceptedLayers = MakeString(Plugin.instance.Config, "Setup", "GenAcceptedLayers", "0, 4, 6, 7, 8, 9, 10, 11, 12, 17, 21, 25, 26, 28, 29", "[Comma-separated listing] - This sets the acceptable layers to search for materials in each GameObject in the ship. If a GameObject has a layer not specified here it will be skipped.");
+            GenBannedObjects = MakeString(Plugin.instance.Config, "Setup", "GenBannedObjects", "damageTrigger, ShipBoundsTrigger, ShipInnerRoomBoundsTrigger, ReverbTriggers, ScavengerModelSuitParts, Plane.001, LandingShipNavObstacle, OutsideShipRoom, SpawnRoom, VaultDoor", "[Comma-separated listing] - This listing of game objects will be skipped and no config section will be generated.\nExisting config section/items will be deleted on re-gen.");
+            GenBannedMaterials = MakeString(Plugin.instance.Config, "Setup", "GenBannedMaterials", "testTrigger (Instance), testTriggerRed (Instance), MapScreen (Instance), DefaultHDMaterial (Instance)", "[Comma-separated listing] - This listing of materials will be skipped and no config item will be generated.\nExisting config items will be deleted on re-gen.");
 
             //LIGHTS
             SetShipLights = MakeBool(Plugin.instance.Config, "Ship Lights", "SetShipLights", true, "Enable or Disable changing ship light colors section");

@@ -32,6 +32,7 @@ namespace ShipColors
         //Compatibility
         public bool LobbyCompat = false;
         public bool darmuhsTerminalStuff = false;
+        public bool ShipWindows = false;
         public Terminal Terminal;
 
 

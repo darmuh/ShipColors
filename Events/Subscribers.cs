@@ -29,6 +29,8 @@ namespace ShipColors.Events
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 OpenLib.Compat.BMX_LobbyCompat.SetBMXCompat(false, version);
             }
+            if (StartGame.SoftCompatibility("TestAccount666.ShipWindows", ref Plugin.instance.ShipWindows))
+                Plugin.Spam("Will rely on ShipWindows to call customization");
 
             if (OpenLib.Plugin.instance.LethalConfig)
             {
@@ -83,6 +85,9 @@ namespace ShipColors.Events
 
         public static void OnStart()
         {
+            if (Plugin.instance.ShipWindows)
+                return;
+
             Plugin.Log.LogInfo("patching customizations now!");
             StartCustomizer();
         }
