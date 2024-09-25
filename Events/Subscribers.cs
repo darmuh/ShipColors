@@ -13,7 +13,7 @@ namespace ShipColors.Events
         public static void Subscribe()
         {
             EventManager.TerminalAwake.AddListener(OnTerminalAwake);
-            EventManager.StartOfRoundStart.AddListener(OnStart);
+            EventManager.TerminalStart.AddListener(OnStart);
             EventManager.TerminalDisable.AddListener(OnTerminalDisable);
             EventManager.GameNetworkManagerStart.AddListener(OnGameLoad);
         }
