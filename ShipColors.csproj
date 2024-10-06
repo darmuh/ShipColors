@@ -157,8 +157,6 @@
     <Compile Include="Customizer\GeneratedCustomization.cs" />
     <Compile Include="Customizer\GlobalSharedCustomization.cs" />
     <Compile Include="Customizer\CustomShipLights.cs" />
-    <Compile Include="Customizer\ShipMonitors.cs" />
-    <Compile Include="Customizer\TerminalCustomizations.cs" />
     <Compile Include="Events\Subscribers.cs" />
     <Compile Include="ConfigManager\ConfigSettings.cs" />
     <Compile Include="PluginCore\Plugin.cs" />

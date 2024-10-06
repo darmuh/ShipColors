@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using ShipColors.ConfigManager;
 using Color = UnityEngine.Color;
 using System.Linq;
-using UnityEngine.InputSystem.HID;
 
 namespace ShipColors.Customizer
 {
@@ -24,105 +23,81 @@ namespace ShipColors.Customizer
             materialToColor.Clear();
             ObjectsWithConfigItems.Clear();
             List<int> acceptableLayers = OpenLib.Common.CommonStringStuff.GetNumberListFromStringList(OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenAcceptedLayers.Value, ','));
-            List<string> bannedObjects = OpenLib.Common.CommonStringStuff.GetListToLower(OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenBannedObjects.Value, ','));
-            List<string> bannedMaterials = OpenLib.Common.CommonStringStuff.GetListToLower(OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenBannedMaterials.Value, ','));
+            List<string> bannedObjects = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenBannedObjects.Value, ',');
+            List<string> bannedMaterials = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenBannedMaterials.Value, ',');
+            List<string> permitListObjects = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenPermitListObjects.Value, ',');
 
-            bool addTerminal = false;
+            bool addTerminal = true;
             if(Plugin.instance.darmuhsTerminalStuff)
                 addTerminal = Compat.MyTerminalStuff.AddTerminalConfigs();
 
             GameObject topLevel = GameObject.Find("Environment/HangarShip");
+            GameObject shipModels2b = GameObject.Find("Environment/HangarShip/ShipModels2b");
             if (topLevel == null)
             {
                 Plugin.ERROR("Unable to find root ship object @ Environment/HangarShip");
                 return;
             }
 
-            if (TryGetChildObjects(topLevel, out List<GameObject> allObjects))
+            if (TryGetChildObjects(topLevel, out List<GameObject> allObjects, shipModels2b))
             {
                 Plugin.Spam($"allObjects Count - {allObjects.Count}");
+
                 allObjects = [.. allObjects.OrderBy(x => x.name)];
                 foreach (GameObject gameObject in allObjects)
                 {
-                    if (bannedObjects.Contains(gameObject.name.ToLower()))
-                        continue; //game object name is blocked
+                    if (allObjects.Any(p => (p.transform == gameObject.transform.parent)))
+                        continue; //if any object in the listing is this object's parent, skip
 
-                    if (!acceptableLayers.Contains(gameObject.layer))
-                        continue; //game object layer is being filtered out
+                    if (!IsValidObject(gameObject, bannedObjects, acceptableLayers, permitListObjects))
+                        continue;
 
                     if (!addTerminal && gameObject.name.ToLower() == "terminal")
                         continue; //skip terminal, covered by darmuhsTerminalStuff
 
-                    if(ObjectsWithConfigItems.Contains(gameObject))
-                        continue; //this object already has a config item created
-
-                    if (allObjects.Any(p => p.transform == gameObject.transform.parent))
-                        continue; //this object has a parent object in the list, skip for now
-
-                    if (IsNotRootGameObject(gameObject, out List<GameObject> children, out Dictionary<GameObject,GameObject> family))
+                    if (TryGetFamily(gameObject, out List<GameObject> familyTree))
                     {
-                        //family.Add(grandchild, child);
-                        if (family.Count > 0)
+                        //grandparent detected
+                        if(familyTree.Count >= 2)
                         {
-                            //process grandchildren
-                            foreach (KeyValuePair<GameObject,GameObject> member in family)
+                            //Plugin.Spam($"sorting through {gameObject.name} familyTree");
+                            int loopCount = 0;
+                            //set i to the last object in the familytree
+                            for(int i = familyTree.Count -1; i > 0; i--)
                             {
-                                if (bannedObjects.Contains(member.Key.name.ToLower()) || ObjectsWithConfigItems.Contains(member.Key))
+                                //Plugin.Spam($"Loop# {loopCount}");
+                                loopCount++;
+                                int child = i;
+                                int parent = child - 1;
+
+                                //Plugin.Spam($"child: {child}\nparent: {parent}\ngrandparent: {grandparent}");
+                                if (familyTree[child] == null)
                                     continue;
 
-                                if (!acceptableLayers.Contains(member.Key.layer))
-                                    continue;
-
-                                //grandchildren config item
-                                if (TryGetAllMeshRenderer(member.Key, out MeshRenderer[] meshes))
+                                if(parent >= 0)
                                 {
-                                    MakeConfigItems(bannedMaterials, meshes, member.Key, member.Value, gameObject);
-                                    ObjectsWithConfigItems.Add(member.Key);
-                                }
-
-                                if (bannedObjects.Contains(member.Value.name.ToLower()) || ObjectsWithConfigItems.Contains(member.Value))
-                                    continue;
-
-                                if (!acceptableLayers.Contains(member.Value.layer))
-                                    continue;
-
-                                //child parent config item
-                                if (TryGetMeshRenderers(member.Value, out MeshRenderer[] mesh))
+                                    //child next loop
+                                    ProcessObject(familyTree[child], bannedMaterials, bannedObjects, acceptableLayers, permitListObjects, familyTree[parent], familyTree[0]);
+                                }    
+                                else
                                 {
-                                    MakeConfigItems(bannedMaterials, mesh, member.Value, gameObject);
-                                    ObjectsWithConfigItems.Add(member.Value);
+                                    //no more parents (toplevel)
+                                    ProcessObject(familyTree[child], bannedMaterials, bannedObjects, acceptableLayers, permitListObjects, familyTree[0]);
                                 }
-                            }
-
-                            ProcessChildren(children, bannedMaterials, bannedObjects, acceptableLayers, gameObject);
-
-                            //main parent config item
-                            if (TryGetMeshRenderers(gameObject, out MeshRenderer[] any))
-                            {
-                                MakeConfigItems(bannedMaterials, any, gameObject);
-                                ObjectsWithConfigItems.Add(gameObject);
                             }
                         }
                         else
                         {
-                            ProcessChildren(children, bannedMaterials, bannedObjects, acceptableLayers, gameObject);
-
-                            //parent config item
-                            if (TryGetMeshRenderers(gameObject, out MeshRenderer[] mesh))
-                            {
-                                MakeConfigItems(bannedMaterials, mesh, gameObject);
-                                ObjectsWithConfigItems.Add(gameObject);
-                            }
+                            if (familyTree.Count == 1)
+                                ProcessObject(familyTree[0], bannedMaterials, bannedObjects, acceptableLayers, permitListObjects, familyTree[0]);
+                            else
+                                Plugin.WARNING("Unable to process familyTree??");
                         }
                     }
                     else
                     {
-                        if (TryGetAllMeshRenderer(gameObject, out MeshRenderer[] meshes))
-                        {
-                            //objects without children
-                            MakeConfigItems(bannedMaterials, meshes, gameObject);
-                            ObjectsWithConfigItems.Add(gameObject);
-                        }
+                        Plugin.Spam($"{gameObject.name} has no familyTree, processing on it's own");
+                        ProcessObject(gameObject, bannedMaterials, bannedObjects, acceptableLayers, permitListObjects);
                     }
                 }
             }
@@ -135,67 +110,45 @@ namespace ShipColors.Customizer
             configGenerated = true;
         }
 
-        private static void ProcessChildren(List<GameObject> children, List<string> bannedMaterials, List<string> bannedObjects, List<int> acceptableLayers, GameObject gameObject)
+        private static bool IsValidObject(GameObject gameObject, List<string> bannedObjects, List<int> acceptableLayers, List<string> permitListObjects)
         {
-            foreach (GameObject child in children)
+            if (bannedObjects.Any(x => gameObject.name.ToLower().Contains(x.ToLower())))
             {
-                if (bannedObjects.Contains(child.name.ToLower()) || ObjectsWithConfigItems.Contains(child))
-                    continue;
-
-                if (!acceptableLayers.Contains(child.layer))
-                    continue;
-
-                //children config item
-                if (TryGetAllMeshRenderer(child, out MeshRenderer[] meshes))
+                if(permitListObjects.Any(y => gameObject.name.ToLower() == y.ToLower()))
+                    Plugin.Spam($"{gameObject.name} is explicitly permitted!");
+                else
                 {
-                    MakeConfigItems(bannedMaterials, meshes, child, gameObject);
-                    ObjectsWithConfigItems.Add(child);
-                }
+                    Plugin.Spam($"{gameObject.name} is detected as a banned object!");
+                    return false;
+                }   
             }
+                
+            if (!acceptableLayers.Contains(gameObject.layer))
+                return false;
+
+            if (ObjectsWithConfigItems.Contains(gameObject))
+                return false;
+
+            return true;
         }
 
-        private static bool IsNotRootGameObject(GameObject thisObject, out List<GameObject> children, out Dictionary<GameObject,GameObject> family)
+        private static void ProcessObject(GameObject gameObject, List<string> bannedMaterials, List<string> bannedObjects, List<int> acceptableLayers, List<string> permitListObjects, GameObject parentObj = null, GameObject grandParent = null)
         {
-            children = [];
-            family = [];
-
-            Plugin.Spam($"Checking IsNotRootGameObject {thisObject.name}");
-
-            if (thisObject == null)
+            if(gameObject == null)
             {
-                Plugin.ERROR("NULL OBJECT SENT TO IsNotRootGameObject");
-                return false;
+                Plugin.ERROR("Provided NULL object at ProcessObject");
+                return;
             }
-            
-            //this object has no children to return
-            if (thisObject.transform.childCount == 0)
-                return false;
 
-            if (TryGetChildObjects(thisObject, out children))
+            if (!IsValidObject(gameObject, bannedObjects, acceptableLayers, permitListObjects))
+                return;
+
+            //direct parent config items
+            if (TryGetMeshRenderers(gameObject, out MeshRenderer[] mesh))
             {
-                foreach (GameObject child in children)
-                {
-                    if (child.transform.childCount == 0)
-                        continue;
-                    else
-                    {
-                        if (TryGetChildObjects(child, out List<GameObject> grandChildren))
-                        {
-                            foreach(GameObject grandchild in grandChildren)
-                            {
-                                family.Add(grandchild, child);
-                            }
-                            Plugin.Spam($"Grandchildren [ {grandChildren.Count} ] found in {thisObject.name}/{child.name}");
-                        }
-                    }
-                }
-
-                return true;
+                MakeConfigItems(bannedMaterials, mesh, gameObject, parentObj, grandParent);
+                ObjectsWithConfigItems.Add(gameObject);
             }
-            else
-                return false;
-
-
         }
 
         private static void MakeConfigItems(List<string> bannedMaterials, MeshRenderer[] meshes, GameObject gameObject, GameObject parent = null, GameObject grandparent = null)
@@ -211,30 +164,37 @@ namespace ShipColors.Customizer
 
                 foreach (Material material in meshRenderer.materials)
                 {
-                    if (bannedMaterials.Contains(material.name.ToLower()))
+                    if (bannedMaterials.Any(x => material.name.ToLower().Contains(x.ToLower())))
+                    {
+                        Plugin.Spam($"{material.name} is banned!");
                         continue;
+                    }
 
                     ConfigEntry<string> colorEntry;
-                    ConfigEntry<float> colorFloatEntry;
+                    ConfigEntry<float> colorFloatEntry = null!;
                     string color = ColorUtility.ToHtmlStringRGB(material.color);
                     if(parent != null && grandparent != null)
                     {
                         colorEntry = MakeString(Generated, $"{grandparent.name} Colors", $"{parent.name}/{gameObject.name}/{material.name} Color", "#" + color, $"Change color of material, {material.name} as part of object {gameObject.name}");
-                        colorFloatEntry = MakeClampedFloat(Generated, $"{grandparent.name} Colors", $"{parent.name}/{gameObject.name}/{material.name} Alpha", material.color.a, $"Change alpha of material, {material.name} as part of object {gameObject.name} in {grandparent.name}", 0, 1);
+                        if(material.color.a < 1)
+                            colorFloatEntry = MakeClampedFloat(Generated, $"{grandparent.name} Colors", $"{parent.name}/{gameObject.name}/{material.name} Alpha", material.color.a, $"Change alpha of material, {material.name} as part of object {gameObject.name} in {grandparent.name}", 0, 1);
                     }
                     else if(parent != null && grandparent == null)
                     {
                         colorEntry = MakeString(Generated, $"{parent.name} Colors", $"{gameObject.name}/{material.name} Color", "#" + color, $"Change color of material, {material.name} as part of object {gameObject.name}");
-                        colorFloatEntry = MakeClampedFloat(Generated, $"{parent.name} Colors", $"{gameObject.name}/{material.name} Alpha", material.color.a, $"Change alpha of material, {material.name} as part of object {gameObject.name}", 0, 1);
+                        if (material.color.a < 1)
+                            colorFloatEntry = MakeClampedFloat(Generated, $"{parent.name} Colors", $"{gameObject.name}/{material.name} Alpha", material.color.a, $"Change alpha of material, {material.name} as part of object {gameObject.name}", 0, 1);
                     }
                     else
                     {
                         colorEntry = MakeString(Generated, $"{gameObject.name} Colors", $"{material.name} Color", "#" + color, $"Change color of material, {material.name} as part of object {gameObject.name}");
-                        colorFloatEntry = MakeClampedFloat(Generated, $"{gameObject.name} Colors", $"{material.name} Alpha", material.color.a, $"Change alpha of material, {material.name} as part of object {gameObject.name}", 0, 1);
+                        if (material.color.a < 1)
+                            colorFloatEntry = MakeClampedFloat(Generated, $"{gameObject.name} Colors", $"{material.name} Alpha", material.color.a, $"Change alpha of material, {material.name} as part of object {gameObject.name}", 0, 1);
                     }
                     
                     Color newColor = HexToColor(colorEntry.Value);
-                    newColor.a = colorFloatEntry.Value;
+                    if(colorFloatEntry != null)
+                        newColor.a = colorFloatEntry.Value;
                     material.color = newColor;
                     //Plugin.Spam($"Config item created for {material.name} in Section: {gameObject.name}");
                     //Plugin.Spam($"{material.name} set to color - {colorEntry.Value} with alpha {colorFloatEntry.Value}");
@@ -263,7 +223,8 @@ namespace ShipColors.Customizer
                 if(item.TryGetItem(valueUpdated, out CustomColorClass newConfig))
                 {
                     Color newColor = HexToColor(valueUpdated.Value);
-                    newColor.a = newConfig.alphaConfig.Value;
+                    if(newConfig.alphaConfig != null)
+                        newColor.a = newConfig.alphaConfig.Value;
                     newConfig.material.color = newColor;
                     Plugin.Spam($"{newConfig.material.name} updated to {valueUpdated.Value}");
                     return;
@@ -289,22 +250,6 @@ namespace ShipColors.Customizer
             Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({materialToColor.Count})");
         }
 
-        private static bool TryGetAllMeshRenderer(GameObject gameObject, out MeshRenderer[] meshes)
-        {
-            if (gameObject == null)
-            {
-                meshes = null;
-                Plugin.WARNING($"GameObject provided is null @TryGetAllMeshRenderer");
-                return false;
-            }
-
-            meshes = gameObject.GetComponentsInChildren<MeshRenderer>();
-            if (meshes == null)
-                return false;
-            else
-                return true;
-        }
-
         private static bool TryGetMeshRenderers(GameObject gameObject, out MeshRenderer[] mesh)
         {
             if (gameObject == null)
@@ -321,7 +266,7 @@ namespace ShipColors.Customizer
                 return true;
         }
 
-        private static bool TryGetChildObjects(GameObject parent, out List<GameObject> allObjects)
+        private static bool TryGetChildObjects(GameObject parent, out List<GameObject> allObjects, GameObject parent2 = null)
         {
             allObjects = null;
             if (parent == null)
@@ -336,12 +281,54 @@ namespace ShipColors.Customizer
             allObjects = [];
             for(int i = 0; i < parent.transform.childCount; i++)
             {
+                if (parent2 != null)
+                    if (parent2 == parent.transform.GetChild(i).gameObject)
+                        continue;
+
                 allObjects.Add(parent.transform.GetChild(i).gameObject);
                 //Plugin.Spam($"Object found through child transform - {parent.transform.GetChild(i).gameObject.name}");
             }
 
+            if(parent2 != null)
+            {
+                if(parent2.transform.childCount > 0)
+                {
+                    for (int i = 0; i < parent2.transform.childCount; i++)
+                    {
+                        allObjects.Add(parent2.transform.GetChild(i).gameObject);
+                        //Plugin.Spam($"Object found through child transform - {parent.transform.GetChild(i).gameObject.name}");
+                    }
+                }
+            }
+
             return true;
 
+        }
+
+        private static bool TryGetFamily(GameObject gameObject, out List<GameObject> familyTree)
+        {
+            familyTree = [];
+            if(gameObject == null)
+            {
+                Plugin.WARNING($"A provided gameobject is NULL at TryGetParents");
+                return false;
+            }
+
+            if(gameObject.transform.childCount == 0)
+                return false;
+
+            List<Transform> allChildren = [.. gameObject.GetComponentsInChildren<Transform>()];
+            familyTree.Add(gameObject);
+
+            foreach(Transform child in allChildren)
+            {
+                if(child.gameObject.GetComponent<MeshRenderer>() != null && child.gameObject != null) //only add objects that have meshrenderer components
+                    familyTree.Add(child.gameObject);
+            }
+
+            Plugin.Spam($"TryGetFamily got familyTree tree for {gameObject.name} with [ {familyTree.Count} ] members");
+
+            return true;
         }
     }
     

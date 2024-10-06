@@ -15,6 +15,7 @@ namespace ShipColors.ConfigManager
         public static ConfigEntry<string> GenAcceptedLayers { get; internal set; }
         public static ConfigEntry<string> GenBannedObjects { get; internal set; }
         public static ConfigEntry<string> GenBannedMaterials { get; internal set; }
+        public static ConfigEntry<string> GenPermitListObjects { get; internal set; }
 
         //LIGHTS
         public static ConfigEntry<bool> SetShipLights { get; internal set; }
@@ -44,24 +45,6 @@ namespace ShipColors.ConfigManager
         public static ConfigEntry<string> Mat_ShipDoors { get; internal set; }
         public static ConfigEntry<string> Mat_ShipDoors2 { get; internal set; }
 
-
-        //Terminal Customization
-        public static ConfigEntry<bool> TerminalCustomization { get; internal set; }
-        public static ConfigEntry<string> TerminalColor { get; internal set; }
-        public static ConfigEntry<string> TerminalButtonsColor { get; internal set; }
-        public static ConfigEntry<string> TerminalKeyboardColor { get; internal set; }
-        public static ConfigEntry<string> TerminalTextColor { get; internal set; }
-        public static ConfigEntry<string> TerminalMoneyColor { get; internal set; }
-        public static ConfigEntry<string> TerminalMoneyBGColor { get; internal set; }
-        public static ConfigEntry<float> TerminalMoneyBGAlpha { get; internal set; }
-        public static ConfigEntry<string> TerminalCaretColor { get; internal set; }
-        public static ConfigEntry<string> TerminalScrollbarColor { get; internal set; }
-        public static ConfigEntry<string> TerminalScrollBGColor { get; internal set; }
-        public static ConfigEntry<string> TerminalLightColor { get; internal set; }
-        public static ConfigEntry<bool> TerminalCustomBG { get; internal set; }
-        public static ConfigEntry<string> TerminalCustomBGColor { get; internal set; }
-        public static ConfigEntry<float> TerminalCustomBGAlpha { get; internal set; }
-
         public static void BindConfigSettings()
         {
             Plugin.Log.LogInfo("Binding configuration settings");
@@ -72,12 +55,14 @@ namespace ShipColors.ConfigManager
 
             ModeSetting = MakeClampedString(Plugin.instance.Config, "Setup", "ModeSetting", "Generate Config", "Determine whether to generate a config for each material or to use Global Shared Textures", new AcceptableValueList<string>("Use Shared Textures", "Generate Config"));
             ConfigCode = MakeString(Plugin.instance.Config, "Setup", "ConfigCode", "", "Paste your config code from the configuration website here to automatically apply your changes!");
-            GenAcceptedLayers = MakeString(Plugin.instance.Config, "Setup", "GenAcceptedLayers", "0, 4, 6, 7, 8, 9, 10, 11, 12, 17, 21, 25, 26, 28, 29", "[Comma-separated listing] - This sets the acceptable layers to search for materials in each GameObject in the ship. If a GameObject has a layer not specified here it will be skipped.");
-            GenBannedObjects = MakeString(Plugin.instance.Config, "Setup", "GenBannedObjects", "damageTrigger, ShipBoundsTrigger, ShipInnerRoomBoundsTrigger, ReverbTriggers, ScavengerModelSuitParts, Plane.001, LandingShipNavObstacle, OutsideShipRoom, SpawnRoom, VaultDoor", "[Comma-separated listing] - This listing of game objects will be skipped and no config section will be generated.\nExisting config section/items will be deleted on re-gen.");
-            GenBannedMaterials = MakeString(Plugin.instance.Config, "Setup", "GenBannedMaterials", "testTrigger (Instance), testTriggerRed (Instance), MapScreen (Instance), DefaultHDMaterial (Instance)", "[Comma-separated listing] - This listing of materials will be skipped and no config item will be generated.\nExisting config items will be deleted on re-gen.");
+            GenAcceptedLayers = MakeString(Plugin.instance.Config, "Setup", "GenAcceptedLayers", "0, 4, 6, 8, 9, 10, 26, 28", "[Comma-separated listing] - This sets the acceptable layers to search for materials in each GameObject in the ship. If a GameObject has a layer not specified here it will be skipped.");
+            GenBannedObjects = MakeString(Plugin.instance.Config, "Setup", "GenBannedObjects", "Screen, (Clone), damageTrigger, ShipBoundsTrigger, ShipInnerRoomBoundsTrigger, ReverbTriggers, ScavengerModelSuitParts, Plane.001, LandingShipNavObstacle, OutsideShipRoom, SpawnRoom, VaultDoor, warningStickers", "[Comma-separated listing] - This listing of game objects will be skipped and no config section will be generated.\nExisting config section/items will be deleted on re-gen.");
+            GenBannedMaterials = MakeString(Plugin.instance.Config, "Setup", "GenBannedMaterials", "testTrigger, testTriggerRed, MapScreen, DefaultHDMaterial, ShipScreen, BlackScreen", "[Comma-separated listing] - This listing of materials will be skipped and no config item will be generated.\nExisting config items will be deleted on re-gen.");
+            GenPermitListObjects = MakeString(Plugin.instance.Config, "Setup", "GenPermitListObjects", "SingleScreen, VentChute(Clone)", "[Comma-separated listing] - This listing of game objects will be ALWAYS be added if an exact match is present.\nIgnores banned entries.");
+
 
             //LIGHTS
-            SetShipLights = MakeBool(Plugin.instance.Config, "Ship Lights", "SetShipLights", true, "Enable or Disable changing ship light colors section");
+            SetShipLights = MakeBool(Plugin.instance.Config, "Ship Lights", "SetShipLights", false, "Enable or Disable changing ship light colors section");
             ShipLight_1 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_1", "#FFFFFF", "This changes the color of the first ship light");
             ShipLight_2 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_2", "#FFFFFF", "This changes the color of the first ship light");
             ShipLight_3 = MakeString(Plugin.instance.Config, "Ship Lights", "ShipLight_3", "#FFFFFF", "This changes the color of the first ship light");

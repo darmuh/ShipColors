@@ -17,6 +17,7 @@
 
 ### Compatibility
 - This mod has built-in compatibility for [ShipWindows](https://thunderstore.io/c/lethal-company/p/TestAccount666/ShipWindows/), [LethalConfig](https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/), and [darmuhsTerminalStuff](https://thunderstore.io/c/lethal-company/p/darmuh/darmuhsTerminalStuff/)
+- For mods like [OpenBodyCams](https://thunderstore.io/c/lethal-company/p/Zaggy1024/OpenBodyCams/) and [GeneralImprovements](https://thunderstore.io/c/lethal-company/p/ShaosilGaming/GeneralImprovements/), the default ban configuration items have added their respective screen objects/material names to avoid issues. [v0.2.3+]
 - For all other mods, if you encounter issues please consider adding game objects associated with their mod to the GenBannedObjects list.
 
 <details>

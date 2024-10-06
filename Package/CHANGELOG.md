@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.2.4]
+ - Removed generation of useless alpha config items (material colors with alpha set to 1 by default)
+ - Added new config item [GenPermitListObjects] to explicitly permit game objects to generate configs, even if the game object matches something in [GenBannedObjects]
+ - Updated to latest version of OpenLib
+ - Updated default configurations with new GenPermitListObjects in mind (suggest using these settings)
+
+## [0.2.3]
+ - Further improved configuration generation.
+	- the funny log message appeared so now we are tracking an object's entire family tree
+	- Emptied objects out of the ShipModels2b black-hole into multiple sections
+	- Hopefully should be the last time this is reworked completely
+ - Fixed banlist config options and they now allow partial matches to object/material names
+ - Updated default configuration items
+	- Screens added by GI and screens modified by OpenBodyCams should now be automatically ignored by default config items
+
+## [0.2.2]
+ - Improved configuration generation & sorting.
+	- Will now check for game objects with children & grand children.
+		- Hopefully no game objects need a deeper dive than that, if this happens you will see a fun log message.
+	- Configuration sections are now labeled by the root parent object of the ship.
+		- This results in some config item names being pretty long to display their full path :)
+ - Moved config generation to TerminalStart (which is a bit later than before)
+	- This will hopefully solve issues where certain objects were not added until config regen.
+
 ## [0.2.1]
  - Fixed darmuhsTerminalStuff soft compatibility
  - Fixed ShipWindows compatibility for Generated Config
