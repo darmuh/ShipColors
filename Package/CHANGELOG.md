@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.2.5]
+ - Fixed issue that would throw errors following the firing sequence when used with Ship Windows. (Thanks Lunxara)
+ - Updated default GenBannedObjects to not filter out the outside ladder. (Thanks Endoxicom)
+ - Updated dependency to latest OpenLib version
+
 ## [0.2.4]
  - Removed generation of useless alpha config items (material colors with alpha set to 1 by default)
  - Added new config item [GenPermitListObjects] to explicitly permit game objects to generate configs, even if the game object matches something in [GenBannedObjects]

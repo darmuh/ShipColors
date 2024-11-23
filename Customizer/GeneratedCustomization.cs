@@ -209,9 +209,12 @@ namespace ShipColors.Customizer
             foreach(CustomColorClass item in config)
             {
                 Color newColor = HexToColor(item.colorConfig.Value);
-                newColor.a = item.alphaConfig.Value;
+                if(item.alphaConfig != null)
+                    newColor.a = item.alphaConfig.Value;
                 item.material.color = newColor;
-                Plugin.Spam($"set color for {item.material.color} to {item.colorConfig.Value} with alpha {item.alphaConfig.Value}");
+                Plugin.Spam($"set color for {item.material.color} to {item.colorConfig.Value}");
+                if(item.alphaConfig != null)
+                    Plugin.Spam($"with alpha {item.alphaConfig.Value}");
             }
         }
 

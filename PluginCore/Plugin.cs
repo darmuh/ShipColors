@@ -14,7 +14,7 @@ using UnityEngine;
 namespace ShipColors
 {
     [BepInPlugin("darmuh.ShipColors", "ShipColors", (PluginInfo.PLUGIN_VERSION))]
-    [BepInDependency("darmuh.OpenLib", "0.2.2")]
+    [BepInDependency("darmuh.OpenLib", "0.2.8")]
 
 
     public class Plugin : BaseUnityPlugin
@@ -24,7 +24,7 @@ namespace ShipColors
         {
             public const string PLUGIN_GUID = "darmuh.ShipColors";
             public const string PLUGIN_NAME = "ShipColors";
-            public const string PLUGIN_VERSION = "0.2.4";
+            public const string PLUGIN_VERSION = "0.2.5";
         }
 
         internal static ManualLogSource Log;
@@ -41,7 +41,6 @@ namespace ShipColors
             instance = this;
             Log = base.Logger;
             Log.LogInfo((object)$"{PluginInfo.PLUGIN_NAME} is loading with version {PluginInfo.PLUGIN_VERSION}!");
-            //Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
             ConfigSettings.BindConfigSettings();
             Config.SettingChanged += OnSettingChanged;
             Subscribers.Subscribe();
