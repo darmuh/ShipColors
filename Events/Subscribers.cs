@@ -4,6 +4,7 @@ using ShipColors.ConfigManager;
 using ShipColors.Customizer;
 using System.Reflection;
 using System;
+using UnityEngine;
 
 
 namespace ShipColors.Events
@@ -16,6 +17,14 @@ namespace ShipColors.Events
             EventManager.TerminalStart.AddListener(OnStart);
             EventManager.TerminalDisable.AddListener(OnTerminalDisable);
             EventManager.GameNetworkManagerStart.AddListener(OnGameLoad);
+
+            EventManager.AutoParentEvent.AddListener(NewObject);
+        }
+
+        public static void NewObject(GameObject obj)
+        {
+            Plugin.Spam("NewObject called!");
+            API.AddObject(obj);
         }
 
         public static void OnGameLoad()
@@ -36,6 +45,7 @@ namespace ShipColors.Events
             {
                 OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Generate Webpage", "Press this to generate a webpage in the Bepinex/Config/Webconfig folder from this mod's generated config!\nYou can then use this webpage to modify your config and paste a config code to apply in-game", "Generate Webpage", GeneratedConfig.GenerateWebpage);
                 OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Regen Config", "Press this to regenerate the generated config when [Mode Setting] is set to Generate Config.", "Regen Config", GeneratedConfig.RegenerateConfig);
+                OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Clear Orpahaned Configs", "Press this to clear orphaned (not currently attached to an object) config items from the Generated Config", "Clear", GeneratedConfig.ClearOrphans);
             }
             else
                 Plugin.MoreLogs("LethalConfig is not detected by OpenLib");
@@ -68,8 +78,7 @@ namespace ShipColors.Events
                     GeneratedCustomization.CreateAllConfigs();
                     GeneratedConfig.Generated.SettingChanged += GeneratedConfig.OnSettingChanged;
                     GeneratedConfig.ReadConfigCode();
-                }
-                    
+                }      
                 else
                     GeneratedCustomization.ReadCustomClassValues(ref GeneratedCustomization.materialToColor);
             }
@@ -85,9 +94,6 @@ namespace ShipColors.Events
 
         public static void OnStart()
         {
-            if (Plugin.instance.ShipWindows)
-                return;
-
             Plugin.Log.LogInfo("patching customizations now!");
             StartCustomizer();
         }

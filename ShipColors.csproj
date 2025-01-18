@@ -151,6 +151,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\API.cs" />
     <Compile Include="Compat\LethalConfigStuff.cs" />
     <Compile Include="Compat\MyTerminalStuff.cs" />
     <Compile Include="ConfigManager\GeneratedConfig.cs" />
@@ -176,6 +177,9 @@
   <ItemGroup>
     <Content Include="Images\image1.jpg" />
     <Content Include="Images\image2.jpg" />
+    <Content Include="Images\lunxarafloor1.jpg" />
+    <Content Include="Images\lunxarafloor2.jpg" />
+    <Content Include="Images\xmas-lunxara.jpg" />
     <Content Include="notes.txt" />
     <Content Include="UnityExplorer\bunkbed mats.png" />
     <Content Include="UnityExplorer\ChargeStation materials.png" />

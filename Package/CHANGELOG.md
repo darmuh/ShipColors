@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.3.0]
+ - Removed early return when ship windows is present.
+	- Generated Customization will now run at terminal start regardless of whether the mod is present.
+	- The earlier issues that the early return had previously solved are no longer present.
+ - Added new patch via OpenLib at AutoParentToShip which all new furniture/upgrades use when they spawn.
+	- This will create a configuration item when the item is spawned so long as it meets your filtering criteria.
+	- Fixes compatibility with Ship Inventory's new upgrade feature.
+	- Appears to catch most furniture/upgrade mods.
+ - Added new API class that will allow other mods to
+	- register their game object to create/track color configuration items
+	- ban their object from generating color configuration items
+	- unban their object (if they previously banned it) from generating color configuration items
+	- initiate/regen configuration
+	- Added support for custom configuration item names and section names via the API
+ - Slight refactor in generated customization to break up a big method (for use with the API)
+ - Added new button to LethalConfig menu to remove orphaned config items from the generated config, this will delete any config items that are not currently attached to a game object.
+	- Be careful with this option as it will remove your customizations for items that have not yet spawned in (if you have them set up already)
+ - Added new configuration items to help further filter configuration items created via the generated config:
+	- GenAcceptScrap: determines whether detected scrap game objects will create configuration items
+	- GenAcceptItems: determines whether non-scrap holdable game objects will create configuration items
+
 ## [0.2.5]
  - Fixed issue that would throw errors following the firing sequence when used with Ship Windows. (Thanks Lunxara)
  - Updated default GenBannedObjects to not filter out the outside ladder. (Thanks Endoxicom)

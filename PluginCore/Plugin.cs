@@ -14,7 +14,7 @@ using UnityEngine;
 namespace ShipColors
 {
     [BepInPlugin("darmuh.ShipColors", "ShipColors", (PluginInfo.PLUGIN_VERSION))]
-    [BepInDependency("darmuh.OpenLib", "0.2.8")]
+    [BepInDependency("darmuh.OpenLib", "0.2.13")]
 
 
     public class Plugin : BaseUnityPlugin
@@ -24,7 +24,7 @@ namespace ShipColors
         {
             public const string PLUGIN_GUID = "darmuh.ShipColors";
             public const string PLUGIN_NAME = "ShipColors";
-            public const string PLUGIN_VERSION = "0.2.5";
+            public const string PLUGIN_VERSION = "0.3.0";
         }
 
         internal static ManualLogSource Log;

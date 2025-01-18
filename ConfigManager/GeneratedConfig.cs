@@ -3,7 +3,6 @@ using BepInEx.Configuration;
 using ShipColors.Customizer;
 using System.IO;
 using OpenLib.ConfigManager;
-using ShipColors.Events;
 
 namespace ShipColors.ConfigManager
 {
@@ -23,6 +22,11 @@ namespace ShipColors.ConfigManager
 
             GeneratedCustomization.configGenerated = false;
             GeneratedCustomization.CreateAllConfigs();
+        }
+
+        public static void ClearOrphans()
+        {
+            ConfigSetup.RemoveOrphanedEntries(Generated);
         }
 
         public static void ReadConfigCode()
