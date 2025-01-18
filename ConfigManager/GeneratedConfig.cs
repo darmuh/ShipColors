@@ -29,6 +29,12 @@ namespace ShipColors.ConfigManager
             ConfigSetup.RemoveOrphanedEntries(Generated);
         }
 
+        public static void RefreshLethalConfigMenu()
+        {
+            if (OpenLib.Plugin.instance.LethalConfig)
+                Compat.LethalConfigStuff.AddConfig(Generated);
+        }
+
         public static void ReadConfigCode()
         {
             if (ConfigSettings.ConfigCode.Value == string.Empty)
@@ -51,37 +57,32 @@ namespace ShipColors.ConfigManager
                 {
                     Plugin.Spam($"String detected, checking listing ({GeneratedCustomization.materialToColor.Count})");
                     ConfigEntry<string> settingChanged = settingChangedArg.ChangedSetting as ConfigEntry<string>;
-                    foreach (CustomColorClass item in GeneratedCustomization.materialToColor)
+                    CustomColorClass item = GeneratedCustomization.materialToColor.Find(x => x.colorConfig == settingChanged);
+                    if(item != null)
                     {
-                        if (item.colorConfig == settingChanged)
-                        {
-                            GeneratedCustomization.UpdateGeneratedValue(settingChanged);
-                            return;
-                        }
+                        GeneratedCustomization.UpdateGeneratedValue(settingChanged);
+                        return;
                     }
-                    Plugin.WARNING($"Unable to find {settingChanged.Definition.Key}");
+
+                    Plugin.Log.LogInfo($"Unable to find an existing setting for {settingChanged.Definition.Key}");
                 }
                 else if (settingChangedArg.ChangedSetting.BoxedValue.GetType() == typeof(float))
                 {
                     Plugin.Spam($"float detected, checking listing ({GeneratedCustomization.materialToColor.Count})");
                     ConfigEntry<float> settingChanged = settingChangedArg.ChangedSetting as ConfigEntry<float>;
-                    foreach (CustomColorClass item in GeneratedCustomization.materialToColor)
+                    CustomColorClass item = GeneratedCustomization.materialToColor.Find(x => x.alphaConfig == settingChanged);
+                    if (item != null)
                     {
-                        if (item.alphaConfig == settingChanged)
-                        {
-                            GeneratedCustomization.UpdateGeneratedValue(settingChanged);
-                            return;
-                        }
+                        GeneratedCustomization.UpdateGeneratedValue(settingChanged);
+                        return;
                     }
 
-                    Plugin.WARNING($"Unable to find {settingChangedArg.ChangedSetting.Definition.Key}");
+                    Plugin.Log.LogInfo($"Unable to find an existing setting for {settingChangedArg.ChangedSetting.Definition.Key}");
                     return;
                 }
                 else
-                    Plugin.WARNING($"Setting change does not match float or string! Type is {settingChangedArg.ChangedSetting.BoxedValue.GetType()}");
+                    Plugin.WARNING($"Setting {settingChangedArg.ChangedSetting.Definition.Key} does not match float or string! Type is {settingChangedArg.ChangedSetting.BoxedValue.GetType()}");
             }
-            else
-                Plugin.Spam("Not in-game or mode is not using generated config");
         }
     }
 }

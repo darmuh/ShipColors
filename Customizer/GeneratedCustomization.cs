@@ -290,42 +290,41 @@ namespace ShipColors.Customizer
         internal static void UpdateGeneratedValue(ConfigEntry<string> valueUpdated)
         {
             Plugin.Spam($"Attempting to update value: {valueUpdated.Definition.Key}");
-            foreach(CustomColorClass item in materialToColor)
-            {
-                if(item.TryGetItem(valueUpdated, out CustomColorClass newConfig))
-                {
-                    if(newConfig.material == null)
-                    {
-                        Plugin.WARNING("Unable to update null material!");
-                        return;
-                    }
+            CustomColorClass newConfig = materialToColor.Find(x => x.colorConfig == valueUpdated);
 
-                    Color newColor = HexToColor(valueUpdated.Value);
-                    if(newConfig.alphaConfig != null)
-                        newColor.a = newConfig.alphaConfig.Value;
-                    newConfig.material.color = newColor;
-                    Plugin.Spam($"{newConfig.material.name} updated to {valueUpdated.Value}");
+            if(newConfig != null)
+            {
+                if (newConfig.material == null)
+                {
+                    Plugin.WARNING("Unable to update null material!");
                     return;
                 }
+
+                Color newColor = HexToColor(valueUpdated.Value);
+                if (newConfig.alphaConfig != null)
+                    newColor.a = newConfig.alphaConfig.Value;
+                newConfig.material.color = newColor;
+                Plugin.Spam($"{newConfig.material.name} updated to {valueUpdated.Value}");
             }
-            Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({materialToColor.Count})");
+            else            
+                Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({materialToColor.Count})");
         }
 
         internal static void UpdateGeneratedValue(ConfigEntry<float> valueUpdated)
         {
             Plugin.Spam($"Attempting to update value: {valueUpdated.Definition.Key}");
-            foreach (CustomColorClass item in materialToColor)
+
+            CustomColorClass newConfig = materialToColor.Find(x => x.alphaConfig == valueUpdated);
+            if(newConfig != null)
             {
-                if (item.TryGetItem(valueUpdated, out CustomColorClass newConfig))
-                {
-                    Color newColor = HexToColor(newConfig.colorConfig.Value);
-                    newColor.a = valueUpdated.Value;
-                    newConfig.material.color = newColor;
-                    Plugin.Spam($"{newConfig.material.name} updated to {valueUpdated.Value}");
-                    return;
-                }
+                Color newColor = HexToColor(newConfig.colorConfig.Value);
+                newColor.a = valueUpdated.Value;
+                newConfig.material.color = newColor;
+                Plugin.Spam($"{newConfig.material.name} updated to {valueUpdated.Value}");
             }
-            Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({materialToColor.Count})");
+            else
+                Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({materialToColor.Count})");
+            
         }
 
         private static bool TryGetMeshRenderers(GameObject gameObject, out MeshRenderer[] mesh)
@@ -388,7 +387,7 @@ namespace ShipColors.Customizer
             familyTree = [];
             if(gameObject == null)
             {
-                Plugin.WARNING($"A provided gameobject is NULL at TryGetParents");
+                Plugin.WARNING($"A provided gameobject is NULL at TryGetFamily");
                 return false;
             }
 

@@ -23,6 +23,13 @@ namespace ShipColors
             GeneratedConfig.RegenerateConfig();
         }
 
+        public static void RefreshLethalConfig()
+        {
+            string YourPluginName = Assembly.GetCallingAssembly().GetName().Name;
+            Plugin.Spam($"{YourPluginName} has called RefreshLethalConfigMenu() from ShipColors.API!");
+            GeneratedConfig.RefreshLethalConfigMenu();
+        }
+
         public static void BanObject(GameObject gameObject)
         {
             if (gameObject == null)
@@ -85,9 +92,6 @@ namespace ShipColors
                 List<string> permitListObjects = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenPermitListObjects.Value, ',');
 
                 GeneratedCustomization.ProcessObjectFamily(gameObject, bannedMaterials, bannedObjects, acceptableLayers, permitListObjects, customSection, customName);
-
-                if (OpenLib.Plugin.instance.LethalConfig)
-                    Compat.LethalConfigStuff.AddConfig(GeneratedConfig.Generated);
             }
         }
 

@@ -18,6 +18,7 @@ namespace ShipColors.ConfigManager
         public static ConfigEntry<string> GenPermitListObjects { get; internal set; }
         public static ConfigEntry<bool> GenAcceptScrap { get; internal set; }
         public static ConfigEntry<bool> GenAcceptItems { get; internal set; }
+        public static ConfigEntry<bool> UseNewObjectEvent { get; internal set; }
         
 
         //LIGHTS
@@ -64,6 +65,7 @@ namespace ShipColors.ConfigManager
             GenPermitListObjects = MakeString(Plugin.instance.Config, "Setup", "GenPermitListObjects", "SingleScreen", "[Comma-separated listing] - This listing of game objects will be ALWAYS be added if an exact match is present.\nIgnores banned entries.");
             GenAcceptScrap = MakeBool(Plugin.instance.Config, "Setup", "GenAcceptScrap", false, "Allow config generation to make color configuration items for scrap.");
             GenAcceptItems = MakeBool(Plugin.instance.Config, "Setup", "GenAcceptItems", false, "Allow config generation to make color configuration items for non-scrap items");
+            UseNewObjectEvent = MakeBool(Plugin.instance.Config, "Setup", "UseNewObjectEvent", true, "Use the OpenLib event that is called when furniture/upgrades are purchased to register furniture/upgrade objects when they are spawned.");
 
 
             //LIGHTS

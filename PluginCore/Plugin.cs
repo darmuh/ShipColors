@@ -24,7 +24,7 @@ namespace ShipColors
         {
             public const string PLUGIN_GUID = "darmuh.ShipColors";
             public const string PLUGIN_NAME = "ShipColors";
-            public const string PLUGIN_VERSION = "0.3.0";
+            public const string PLUGIN_VERSION = "0.3.2";
         }
 
         internal static ManualLogSource Log;

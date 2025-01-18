@@ -23,6 +23,9 @@ namespace ShipColors.Events
 
         public static void NewObject(GameObject obj)
         {
+            if ((!GeneratedCustomization.configGenerated && obj.transform.parent != null) || !ConfigSettings.UseNewObjectEvent.Value)
+                return;
+
             Plugin.Spam("NewObject called!");
             API.AddObject(obj);
         }
@@ -31,7 +34,7 @@ namespace ShipColors.Events
         {
             if(StartGame.SoftCompatibility("darmuh.TerminalStuff", ref Plugin.instance.darmuhsTerminalStuff))
             {
-                Plugin.MoreLogs("leaving terminal customization to darmuhsTerminalStuff (generated config will skip terminal object)");
+                Plugin.Log.LogInfo("leaving terminal customization to darmuhsTerminalStuff (generated config will skip terminal object)");
             }
             if(StartGame.SoftCompatibility("BMX.LobbyCompatibility", ref Plugin.instance.LobbyCompat))
             {
@@ -43,6 +46,7 @@ namespace ShipColors.Events
 
             if (OpenLib.Plugin.instance.LethalConfig)
             {
+                OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Refresh Menu", "Press this to refresh this menu for any more generated config items.\nYou will need to open another mod's config and return to this mod's config to see the newest configuration items.", "Refresh", GeneratedConfig.RefreshLethalConfigMenu);
                 OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Generate Webpage", "Press this to generate a webpage in the Bepinex/Config/Webconfig folder from this mod's generated config!\nYou can then use this webpage to modify your config and paste a config code to apply in-game", "Generate Webpage", GeneratedConfig.GenerateWebpage);
                 OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Regen Config", "Press this to regenerate the generated config when [Mode Setting] is set to Generate Config.", "Regen Config", GeneratedConfig.RegenerateConfig);
                 OpenLib.Compat.LethalConfigSoft.AddButton("Setup", "Clear Orpahaned Configs", "Press this to clear orphaned (not currently attached to an object) config items from the Generated Config", "Clear", GeneratedConfig.ClearOrphans);

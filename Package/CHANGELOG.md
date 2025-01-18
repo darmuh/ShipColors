@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.3.2]
+ - General performance improvements. Most noticeable when purchasing upgrades/furniture
+	- removed a couple of foreach loops in favor of LINQ Find methods
+ - Added config item to disable upgrade/furniture event watcher per recommendation.
+	- Disabling this will result in no upgrades/furniture/etc. getting configuration items created for their colors. And their colors will likely only be changed during lobby reload.
+ - Removed LethalConfig refresh for every new object that is added via AddObject in ShipColors.API
+	- You will now need to call RefreshLethalConfig when you want to refresh the lethal config menu with your new configuration items.
+ - Added new ``Refresh`` button to LethalConfigMenu. This button will refresh lethalconfig with any configuration items that were generated since the last time it was refreshed.
+	- While in-game looking at the LethalConfig menus, you will need to open another mod's config and then return to this mod's config to see the newest configuration items.
+ - Updated some logging messages.
+
+## [0.3.1]
+ - Added early return for NewObject method when the config has not yet been generated.
+	- This should fix some noticeable lag at startup.
+	- Thanks Lunxara/Endoxicom for reports/testing
+ - fixed some typos in readme
+
 ## [0.3.0]
  - Removed early return when ship windows is present.
 	- Generated Customization will now run at terminal start regardless of whether the mod is present.

@@ -30,11 +30,13 @@
 	- RegenConfigItems: Calls the RegenerateConfig method (the one used for the button in LethalConfig)
 		- This will restart config generation and search the entire ship for objects to create config items for.
 	- BanObject: Will ban the game object provided from generating color configuration items (will also prevent color changes)
-	- UnbanObject: Will unban the game object provided from generating color configuration items (will also prevent color changes)
+	- UnbanObject: Will unban the game object provided from generating color configuration items and changing material colors
 		- You'll only ever need to use this if you have banned your object at some point and want to unban it later.
 	- AddObject: Will register your object to create a configuration item for color changes
 		- This is used by my AutoParentEvent patch to register furniture/upgrade spawned objects.
 		- If for whatever reason my patches are not detecting your modded object that you want to register, you can call this method to add it.
+		- Once you've added all objects you wish to register, you will need to call RefreshLethalConfig
+	- RefreshLethalConfig: Refresh the lethal config menu for shipcolors with any new configuration items since last refresh
 
 <details>
 <summary>Please see below for a helpful guide on configuring this mod in "Use Shared Textures" mode: (Credits to Endoxicom)</summary>
@@ -75,7 +77,7 @@ See below some early examples of this mod after configuration:
 </details>
 
 <details>
-<summary>Lunxara Fancy Ship Example (1)</summary>
+<summary>Lunxara Fancy Ship Example (2)</summary>
 
 ![lunxarafloor2](https://github.com/darmuh/ShipColors/blob/master/Images/lunxarafloor2.jpg?raw=true)
 
