@@ -80,6 +80,20 @@ namespace ShipColors.ConfigManager
                     Plugin.Log.LogInfo($"Unable to find an existing setting for {settingChangedArg.ChangedSetting.Definition.Key}");
                     return;
                 }
+                else if(settingChangedArg.ChangedSetting.BoxedValue.GetType() == typeof(bool))
+                {
+                    Plugin.Spam($"bool detected, checking listing ({GeneratedCustomization.VisibilityList.Count})");
+                    ConfigEntry<bool> settingChanged = settingChangedArg.ChangedSetting as ConfigEntry<bool>;
+                    CustomVisibility item = GeneratedCustomization.VisibilityList.Find(x => x.Visible == settingChanged);
+                    if (item != null)
+                    {
+                        GeneratedCustomization.UpdateGeneratedValue(settingChanged);
+                        return;
+                    }
+
+                    Plugin.Log.LogInfo($"Unable to find an existing setting for {settingChangedArg.ChangedSetting.Definition.Key}");
+                    return;
+                }
                 else
                     Plugin.WARNING($"Setting {settingChangedArg.ChangedSetting.Definition.Key} does not match float or string! Type is {settingChangedArg.ChangedSetting.BoxedValue.GetType()}");
             }

@@ -93,6 +93,7 @@ namespace ShipColors.Events
         public static void OnTerminalDisable()
         {
             GeneratedCustomization.materialToColor.Clear();
+            GeneratedCustomization.VisibilityList.Clear();
             GeneratedCustomization.configGenerated = false;
         }
 

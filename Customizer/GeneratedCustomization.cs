@@ -12,9 +12,11 @@ namespace ShipColors.Customizer
 {
     internal class GeneratedCustomization
     {
+        internal static List<CustomVisibility> VisibilityList = [];
         internal static List<CustomColorClass> materialToColor = [];
         internal static List<GameObject> ObjectsWithConfigItems = [];
         internal static List<GameObject> DoNotTouchList = [];
+        internal static GameObject topLevel;
         internal static bool configGenerated = false;
         internal static void CreateAllConfigs()
         {
@@ -33,7 +35,7 @@ namespace ShipColors.Customizer
             if(Plugin.instance.darmuhsTerminalStuff)
                 addTerminal = Compat.MyTerminalStuff.AddTerminalConfigs();
 
-            GameObject topLevel = GameObject.Find("Environment/HangarShip");
+            topLevel = GameObject.Find("Environment/HangarShip");
             GameObject shipModels2b = GameObject.Find("Environment/HangarShip/ShipModels2b");
             if (topLevel == null)
             {
@@ -206,8 +208,67 @@ namespace ShipColors.Customizer
                 Plugin.Spam($"{gameObject.name} has no MeshRenderers!");
         }
 
+        private static void MakeVisibilityConfigItems(List<string> bannedMaterials, MeshRenderer[] meshes, GameObject gameObject, GameObject parent = null, GameObject grandparent = null, string customSection = "", string customName = "")
+        {
+            if(!ConfigSettings.GenVisibilityConfig.Value)
+                return;
+
+            List<Material> materials = [.. meshes.Select(x => x.material)];
+            materials.RemoveAll(m => bannedMaterials.Any(x => m.name.ToLower().Contains(x.ToLower())));
+
+            if (materials.Count == 0)
+                return;
+
+            string objectName;
+
+            if (parent != null && grandparent != null)
+                objectName = $"{grandparent.name}";
+            else if (parent != null && grandparent == null)
+                objectName = $"{parent.name}";
+            else
+                objectName = $"{gameObject.name}";
+
+            string sectionName;
+
+            if (customSection.Length > 0)
+                sectionName = customSection;
+            else
+                sectionName = $"{objectName} Colors";
+
+            if (customName.Length > 0)
+                objectName = $"{customName}";
+
+
+            foreach (MeshRenderer mesh in meshes)
+            {
+                ConfigEntry<bool> isVisible = MakeBool(Generated, $"{objectName} Colors", $"{mesh.name} Visibility", mesh.gameObject.activeSelf, "Toggle visibility of this meshrenderer");
+
+                if (CustomVisibility.TryGetByObject(mesh.gameObject, out CustomVisibility item))
+                {
+
+                    item.Update(mesh, isVisible);
+                    Plugin.Spam($"Updating visibility config for {mesh.name}");
+                }
+                else
+                {
+                    item = new(mesh, isVisible);
+                    VisibilityList.Add(item);
+                    Plugin.Spam($"New visibility config item created/stored for {mesh.name}");
+                }
+
+                mesh.gameObject.SetActive(isVisible.Value);
+
+
+                Plugin.Spam($"Visibility for [ {isVisible.Definition.Key} ] set to [{isVisible.Value}]");
+            }
+
+            
+        }
+
         private static void MakeConfigItems(List<string> bannedMaterials, MeshRenderer[] meshes, GameObject gameObject, GameObject parent = null, GameObject grandparent = null, string customSection = "", string customName = "")
         {
+            MakeVisibilityConfigItems(bannedMaterials, meshes, gameObject, parent, grandparent, customSection, customName);
+
             foreach (MeshRenderer meshRenderer in meshes)
             {
                 //Plugin.Spam($"meshRenderer: {meshRenderer.name} / materials count: {meshRenderer.materials.Length}");
@@ -216,6 +277,8 @@ namespace ShipColors.Customizer
                     Plugin.WARNING($"No materials in {meshRenderer.name}");
                     continue;
                 }
+
+                
 
                 foreach (Material material in meshRenderer.materials)
                 {
@@ -265,10 +328,17 @@ namespace ShipColors.Customizer
                     if(colorFloatEntry != null)
                         newColor.a = colorFloatEntry.Value;
                     material.color = newColor;
-                    //Plugin.Spam($"Config item created for {material.name} in Section: {gameObject.name}");
-                    //Plugin.Spam($"{material.name} set to color - {colorEntry.Value} with alpha {colorFloatEntry.Value}");
-                    CustomColorClass CustomColorClass = new(colorEntry, colorFloatEntry, material, gameObject);
-                    materialToColor.Add(CustomColorClass);
+                    
+                    if(CustomColorClass.TryGetByMat(material, out CustomColorClass holder))
+                    {
+                        Plugin.Spam($"Updating existing CustomColorClass: [ {holder.Name} ]");
+                        holder.Update(colorEntry, colorFloatEntry, material, gameObject);
+                    }
+                    else
+                        holder = new(colorEntry, colorFloatEntry, material, gameObject);
+
+                    if(!materialToColor.Contains(holder))
+                        materialToColor.Add(holder);
                 }
             }
         }
@@ -325,6 +395,27 @@ namespace ShipColors.Customizer
             else
                 Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({materialToColor.Count})");
             
+        }
+
+        internal static void UpdateGeneratedValue(ConfigEntry<bool> valueUpdated)
+        {
+            Plugin.Spam($"Attempting to update value: {valueUpdated.Definition.Key}");
+
+            CustomVisibility newConfig = VisibilityList.Find(x => x.Visible == valueUpdated);
+            if (newConfig != null)
+            {
+                newConfig.Visible = valueUpdated;
+
+                if (newConfig.GameObj == null)
+                    Plugin.WARNING($"\"{valueUpdated.Definition.Key}\" GameObject reference is NULL! Unable to update visibility for this object.");
+                else
+                    newConfig.GameObj.SetActive(valueUpdated.Value);
+
+                Plugin.Spam($"Visibility for [ {valueUpdated.Definition.Key} ] set to [{newConfig.Visible.Value}]");
+            }
+            else
+                Plugin.WARNING($"Could not find {valueUpdated.Definition.Key} in material listing ({VisibilityList.Count})");
+
         }
 
         private static bool TryGetMeshRenderers(GameObject gameObject, out MeshRenderer[] mesh)
@@ -409,8 +500,46 @@ namespace ShipColors.Customizer
         }
     }
     
+    internal class CustomVisibility
+    {
+        internal string Name;
+        internal ConfigEntry<bool> Visible;
+        internal GameObject GameObj;
+        internal MeshRenderer Mesh;
+
+        internal CustomVisibility(MeshRenderer mesh, ConfigEntry<bool> visible)
+        {
+            Mesh = mesh;
+            GameObj = mesh.gameObject;
+            Visible = visible;
+            Name = visible.Definition.Key;
+        }
+
+        internal void Update(MeshRenderer mesh, ConfigEntry<bool> visible)
+        {
+            Mesh = mesh;
+            GameObj = mesh.gameObject;
+            Visible = visible;
+            Name = visible.Definition.Key;
+        }
+
+        internal static bool TryGetByObject(GameObject obj, out CustomVisibility item)
+        {
+            item = null!;
+
+            if (GeneratedCustomization.VisibilityList.Count < 1)
+                return false;
+
+            item = GeneratedCustomization.VisibilityList.FirstOrDefault(v => v.GameObj == obj);
+            return item != null;
+        }
+
+
+    }
+
     internal class CustomColorClass
     {
+        internal string Name;
         internal ConfigEntry<string> colorConfig;
         internal ConfigEntry<float> alphaConfig;
         internal GameObject gameObj;
@@ -422,27 +551,27 @@ namespace ShipColors.Customizer
             alphaConfig = floatEntry;
             material = mat;
             gameObj = obj;
+            Name = colorConfig.Definition.Key;
         }
 
-        internal bool TryGetItem(ConfigEntry<string> configEntry, out CustomColorClass item)
+        internal void Update(ConfigEntry<string> stringEntry, ConfigEntry<float> floatEntry, Material mat, GameObject obj)
         {
-            if(configEntry == colorConfig)
-            {
-                item = this;
-                return true;
-            }
-            item = null;
-            return false;
+            colorConfig = stringEntry;
+            alphaConfig = floatEntry;
+            material = mat;
+            gameObj = obj;
+            Name = colorConfig.Definition.Key;
         }
-        internal bool TryGetItem(ConfigEntry<float> configEntry, out CustomColorClass item)
+
+        internal static bool TryGetByMat(Material mat, out CustomColorClass item)
         {
-            if (configEntry == alphaConfig)
-            {
-                item = this;
-                return true;
-            }
-            item = null;
-            return false;
+            item = null!;
+
+            if (GeneratedCustomization.materialToColor.Count < 1)
+                return false;
+
+            item = GeneratedCustomization.materialToColor.FirstOrDefault(c => c.material == mat);
+            return item != null;
         }
     }
 }

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.3.3]
+ - Added new Visibility feature that is default disabled under the ``GenVisibilityConfig`` config item
+	- When the config item is enabled, all objects with a color config entry will also generate a visibilty config toggle.
+	- When visibility is disabled, the respective game object is disabled.
+	- You can disable literally anything so this does have the ability to brick your game if you're dumb about it. Use at your own risk.
+ - Added new API methods to force hide or force show certain objects.
+	- I expect ship model replacement mods like wider ship, ship windows, 2 story ship, etc. to need to use these API methods when a player is switching between different model configurations.
+
 ## [0.3.2]
  - General performance improvements. Most noticeable when purchasing upgrades/furniture
 	- removed a couple of foreach loops in favor of LINQ Find methods

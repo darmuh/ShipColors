@@ -2,6 +2,7 @@
 using ShipColors.Customizer;
 using ShipColors.Events;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -63,6 +64,29 @@ namespace ShipColors
             else
                 Plugin.Log.LogInfo($"{gameObject.name} is already unbanned!");
 
+        }
+
+        public static void ForceShowObject(GameObject gameObject)
+        {
+            if(!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
+            CustomVisibility item = GeneratedCustomization.VisibilityList.FirstOrDefault(c => c.GameObj == gameObject);
+
+            if(item != null)
+                item.Visible.Value = true;
+        }
+
+
+        public static void ForceHideObject(GameObject gameObject)
+        {
+            if (gameObject.activeSelf)
+                gameObject.SetActive(false);
+
+            CustomVisibility item = GeneratedCustomization.VisibilityList.FirstOrDefault(c => c.GameObj == gameObject);
+
+            if (item != null)
+                item.Visible.Value = false;
         }
 
         public static void AddObject(GameObject gameObject, string customSection = "", string customName = "")
