@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.3.4]
+ - Changed from using MeshRenderer references to using Renderer references which should now include SkinnedMeshRenderer references as well
+	- This was done to get the beltbag's skinnedmeshrenderer, however, this should add a lot more references detected by the mod in general.
+	- Thanks for the suggestion Zaggy
+ - Updated default layers config to include the terminal's default layer (layer 29)
+ - Updated TerminalStuff compatibility
+	- If a provided game object is the terminal will
+		- Check if terminalstuff's customization config item is enabled
+		- If terminalstuff customization is enabled, will not create color config items
+		- will still create visibility config items regardless of terminalstuff's color customization
+ - This update doesn't *need* OpenLib version 0.3.0 so will leave the required version as 0.2.14 in case there's any issues that require reverting to a lower version
+	- feel free to update your OpenLib, just mentioning it shouldnt be needed at this time
+
 ## [0.3.3]
  - Added new Visibility feature that is default disabled under the ``GenVisibilityConfig`` config item
 	- When the config item is enabled, all objects with a color config entry will also generate a visibilty config toggle.

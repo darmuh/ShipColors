@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using ShipColors.ConfigManager;
 using Color = UnityEngine.Color;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace ShipColors.Customizer
 {
@@ -31,10 +32,6 @@ namespace ShipColors.Customizer
             List<string> bannedMaterials = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenBannedMaterials.Value, ',');
             List<string> permitListObjects = OpenLib.Common.CommonStringStuff.GetKeywordsPerConfigItem(ConfigSettings.GenPermitListObjects.Value, ',');
 
-            bool addTerminal = true;
-            if(Plugin.instance.darmuhsTerminalStuff)
-                addTerminal = Compat.MyTerminalStuff.AddTerminalConfigs();
-
             topLevel = GameObject.Find("Environment/HangarShip");
             GameObject shipModels2b = GameObject.Find("Environment/HangarShip/ShipModels2b");
             if (topLevel == null)
@@ -56,8 +53,8 @@ namespace ShipColors.Customizer
                     if (!IsValidObject(gameObject, bannedObjects, acceptableLayers, permitListObjects))
                         continue;
 
-                    if (!addTerminal && gameObject.name.ToLower() == "terminal")
-                        continue; //skip terminal, covered by darmuhsTerminalStuff
+                    //if (!addTerminal && gameObject.name.ToLower() == "terminal")
+                        //continue; //skip terminal, covered by darmuhsTerminalStuff
 
                     ProcessObjectFamily(gameObject, bannedMaterials, bannedObjects, acceptableLayers, permitListObjects);
                 }
@@ -199,21 +196,21 @@ namespace ShipColors.Customizer
                 return;
 
             //direct parent config items
-            if (TryGetMeshRenderers(gameObject, out MeshRenderer[] mesh))
+            if (TryGetRenderers(gameObject, out Renderer[] renderer))
             {
-                MakeConfigItems(bannedMaterials, mesh, gameObject, parentObj, grandParent, customSection, customName);
+                MakeConfigItems(bannedMaterials, renderer, gameObject, parentObj, grandParent, customSection, customName);
                 ObjectsWithConfigItems.Add(gameObject);
             }
             else
-                Plugin.Spam($"{gameObject.name} has no MeshRenderers!");
+                Plugin.Spam($"{gameObject.name} has no Renderers!");
         }
 
-        private static void MakeVisibilityConfigItems(List<string> bannedMaterials, MeshRenderer[] meshes, GameObject gameObject, GameObject parent = null, GameObject grandparent = null, string customSection = "", string customName = "")
+        private static void MakeVisibilityConfigItems(List<string> bannedMaterials, Renderer[] renderers, GameObject gameObject, GameObject parent = null, GameObject grandparent = null, string customSection = "", string customName = "")
         {
             if(!ConfigSettings.GenVisibilityConfig.Value)
                 return;
 
-            List<Material> materials = [.. meshes.Select(x => x.material)];
+            List<Material> materials = [.. renderers.Select(x => x.material)];
             materials.RemoveAll(m => bannedMaterials.Any(x => m.name.ToLower().Contains(x.ToLower())));
 
             if (materials.Count == 0)
@@ -239,24 +236,24 @@ namespace ShipColors.Customizer
                 objectName = $"{customName}";
 
 
-            foreach (MeshRenderer mesh in meshes)
+            foreach (Renderer renderer in renderers)
             {
-                ConfigEntry<bool> isVisible = MakeBool(Generated, $"{objectName} Colors", $"{mesh.name} Visibility", mesh.gameObject.activeSelf, "Toggle visibility of this meshrenderer");
+                ConfigEntry<bool> isVisible = MakeBool(Generated, $"{objectName} Colors", $"{renderer.name} Visibility", renderer.gameObject.activeSelf, "Toggle visibility of this Renderer");
 
-                if (CustomVisibility.TryGetByObject(mesh.gameObject, out CustomVisibility item))
+                if (CustomVisibility.TryGetByObject(renderer.gameObject, out CustomVisibility item))
                 {
 
-                    item.Update(mesh, isVisible);
-                    Plugin.Spam($"Updating visibility config for {mesh.name}");
+                    item.Update(renderer, isVisible);
+                    Plugin.Spam($"Updating visibility config for {renderer.name}");
                 }
                 else
                 {
-                    item = new(mesh, isVisible);
+                    item = new(renderer, isVisible);
                     VisibilityList.Add(item);
-                    Plugin.Spam($"New visibility config item created/stored for {mesh.name}");
+                    Plugin.Spam($"New visibility config item created/stored for {renderer.name}");
                 }
 
-                mesh.gameObject.SetActive(isVisible.Value);
+                renderer.gameObject.SetActive(isVisible.Value);
 
 
                 Plugin.Spam($"Visibility for [ {isVisible.Definition.Key} ] set to [{isVisible.Value}]");
@@ -265,22 +262,48 @@ namespace ShipColors.Customizer
             
         }
 
-        private static void MakeConfigItems(List<string> bannedMaterials, MeshRenderer[] meshes, GameObject gameObject, GameObject parent = null, GameObject grandparent = null, string customSection = "", string customName = "")
+        private static bool IsThisATerminal(GameObject gameObject, GameObject parent, GameObject grandparent)
         {
-            MakeVisibilityConfigItems(bannedMaterials, meshes, gameObject, parent, grandparent, customSection, customName);
+            bool gameObj = gameObject.name.ToLower() == "terminal";
 
-            foreach (MeshRenderer meshRenderer in meshes)
+            if (grandparent == null && parent == null)
+                return gameObj;
+
+            if (gameObj)
+                return true;
+
+            if (parent.name.ToLower() == "terminal")
+                return true;
+
+            if (grandparent != null)
+                return grandparent.name.ToLower() == "terminal";
+
+            return false;
+        }
+
+        private static void MakeConfigItems(List<string> bannedMaterials, Renderer[] renderers, GameObject gameObject, GameObject parent = null, GameObject grandparent = null, string customSection = "", string customName = "")
+        {
+            MakeVisibilityConfigItems(bannedMaterials, renderers, gameObject, parent, grandparent, customSection, customName);
+
+            bool addTerminal = true;
+            if (Plugin.instance.darmuhsTerminalStuff)
+                addTerminal = Compat.MyTerminalStuff.AddTerminalConfigs();
+
+            if (!addTerminal && IsThisATerminal(gameObject, parent, grandparent))
+                return; //skip terminal color items, covered by darmuhsTerminalStuff
+
+            foreach (Renderer render in renderers)
             {
-                //Plugin.Spam($"meshRenderer: {meshRenderer.name} / materials count: {meshRenderer.materials.Length}");
-                if (meshRenderer.materials.Length < 1)
+                //Plugin.Spam($"render: {render.name} / materials count: {render.materials.Length}");
+                if (render.materials.Length < 1)
                 {
-                    Plugin.WARNING($"No materials in {meshRenderer.name}");
+                    Plugin.WARNING($"No materials in {render.name}");
                     continue;
                 }
 
                 
 
-                foreach (Material material in meshRenderer.materials)
+                foreach (Material material in render.materials)
                 {
                     if (bannedMaterials.Any(x => material.name.ToLower().Contains(x.ToLower())))
                     {
@@ -315,7 +338,7 @@ namespace ShipColors.Customizer
                         {
                             itemName = $"{customName}";
 
-                            if (meshRenderer.materials.Length > 1)
+                            if (render.materials.Length > 1)
                                 itemName = $"{customName} {material.name}";
                         }
 
@@ -418,17 +441,17 @@ namespace ShipColors.Customizer
 
         }
 
-        private static bool TryGetMeshRenderers(GameObject gameObject, out MeshRenderer[] mesh)
+        private static bool TryGetRenderers(GameObject gameObject, out Renderer[] renderer)
         {
             if (gameObject == null)
             {
-                mesh = null;
-                Plugin.WARNING($"GameObject provided is null @TryGetMeshRenderer");
+                renderer = null;
+                Plugin.WARNING($"GameObject provided is null @TryGetRenderer");
                 return false;
             }
 
-            mesh = gameObject.GetComponents<MeshRenderer>();
-            if (mesh == null)
+            renderer = gameObject.GetComponents<Renderer>();
+            if (renderer == null)
                 return false;
             else
                 return true;
@@ -490,7 +513,7 @@ namespace ShipColors.Customizer
 
             foreach(Transform child in allChildren)
             {
-                if(child.gameObject.GetComponent<MeshRenderer>() != null && child.gameObject != null) //only add objects that have meshrenderer components
+                if(child.gameObject.GetComponent<Renderer>() != null && child.gameObject != null) //only add objects that have Renderer components
                     familyTree.Add(child.gameObject);
             }
 
@@ -505,20 +528,20 @@ namespace ShipColors.Customizer
         internal string Name;
         internal ConfigEntry<bool> Visible;
         internal GameObject GameObj;
-        internal MeshRenderer Mesh;
+        internal Renderer Renderer;
 
-        internal CustomVisibility(MeshRenderer mesh, ConfigEntry<bool> visible)
+        internal CustomVisibility(Renderer renderer, ConfigEntry<bool> visible)
         {
-            Mesh = mesh;
-            GameObj = mesh.gameObject;
+            Renderer = renderer;
+            GameObj = renderer.gameObject;
             Visible = visible;
             Name = visible.Definition.Key;
         }
 
-        internal void Update(MeshRenderer mesh, ConfigEntry<bool> visible)
+        internal void Update(Renderer renderer, ConfigEntry<bool> visible)
         {
-            Mesh = mesh;
-            GameObj = mesh.gameObject;
+            Renderer = renderer;
+            GameObj = renderer.gameObject;
             Visible = visible;
             Name = visible.Definition.Key;
         }
