@@ -19,6 +19,7 @@ namespace ShipColors.ConfigManager
         public static ConfigEntry<bool> GenAcceptScrap { get; internal set; }
         public static ConfigEntry<bool> GenAcceptItems { get; internal set; }
         public static ConfigEntry<bool> UseNewObjectEvent { get; internal set; }
+        public static ConfigEntry<bool> UseNetworkObjectSpawnEvent { get; internal set; }
         public static ConfigEntry<bool> GenVisibilityConfig { get; internal set; }
         
 
@@ -67,6 +68,7 @@ namespace ShipColors.ConfigManager
             GenAcceptScrap = MakeBool(Plugin.instance.Config, "Setup", "GenAcceptScrap", false, "Allow config generation to make color configuration items for scrap.");
             GenAcceptItems = MakeBool(Plugin.instance.Config, "Setup", "GenAcceptItems", false, "Allow config generation to make color configuration items for non-scrap items");
             UseNewObjectEvent = MakeBool(Plugin.instance.Config, "Setup", "UseNewObjectEvent", true, "Use the OpenLib event that is called when furniture/upgrades are purchased to register furniture/upgrade objects when they are spawned.");
+            UseNetworkObjectSpawnEvent = MakeBool(Plugin.instance.Config, "Setup", "UseNetworkObjectSpawnEvent", false, "Use the OpenLib event that is called when any network object is spawned.\nThis will catch networked objects spawned outside the ship like items spawned in the dropship");
             GenVisibilityConfig = MakeBool(Plugin.instance.Config, "Setup", "GenVisibilityConfig", false, "Add visibility config items to hide game objects associated with a MeshRenderer.\nIf having any issues with ship model replacement mods such as Ship Windows, Wider Ship, Melanie's 2 Story Ship, etc. please disable this setting.");
 
 

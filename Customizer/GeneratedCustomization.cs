@@ -53,9 +53,6 @@ namespace ShipColors.Customizer
                     if (!IsValidObject(gameObject, bannedObjects, acceptableLayers, permitListObjects))
                         continue;
 
-                    //if (!addTerminal && gameObject.name.ToLower() == "terminal")
-                        //continue; //skip terminal, covered by darmuhsTerminalStuff
-
                     ProcessObjectFamily(gameObject, bannedMaterials, bannedObjects, acceptableLayers, permitListObjects);
                 }
             }

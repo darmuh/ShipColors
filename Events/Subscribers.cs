@@ -19,6 +19,7 @@ namespace ShipColors.Events
             EventManager.GameNetworkManagerStart.AddListener(OnGameLoad);
 
             EventManager.AutoParentEvent.AddListener(NewObject);
+            EventManager.NetworkObjectSpawn.AddListener(ObjectSpawn);
         }
 
         public static void NewObject(GameObject obj)
@@ -27,6 +28,14 @@ namespace ShipColors.Events
                 return;
 
             Plugin.Spam("NewObject called!");
+            API.AddObject(obj);
+        }
+        public static void ObjectSpawn(GameObject obj)
+        {
+            if ((!GeneratedCustomization.configGenerated && obj.transform.parent != null) || !ConfigSettings.UseNetworkObjectSpawnEvent.Value)
+                return;
+
+            Plugin.Spam("ObjectSpawn called!");
             API.AddObject(obj);
         }
 
